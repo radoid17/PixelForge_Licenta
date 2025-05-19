@@ -1,0 +1,29 @@
+﻿@model List<PixelForge.Models.Game>
+@{
+    ViewData["Title"] = "Store";
+}
+
+<h3>Store</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var game in Model)
+        {
+            <tr>
+                <td>@game.Title</td>
+                <td>@game.Price.ToString("N2") $</td>
+                <td>
+                    <a class="btn btn-success">Buy</a>
+                    @*<a asp-action="Edit" asp-route-id="@game.Id">Edit</a>*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
