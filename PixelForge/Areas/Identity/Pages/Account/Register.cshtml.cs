@@ -91,6 +91,12 @@ namespace PixelForge.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
+            [Required]
+            [Display(Name = "Role")]
+            [RegularExpression("User|Publisher", ErrorMessage = "Invalid role selected.")]
+            public string Role { get; set; }
+
+
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -131,9 +137,31 @@ namespace PixelForge.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user, Input.Password);
 
+
+                var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
+                {
+                    _logger.LogInformation("User created a new account with password.");
+
+                    // ✅ Assign role here
+                    if (Input.Role == "User" || Input.Role == "Publisher")
+                    {
+                        await _userManager.AddToRoleAsync(user, Input.Role);
+                    }
+                    else
+                    {
+                        // Defensive check — should never happen due to model validation
+                        _logger.LogWarning("Invalid role tried to be assigned: {Role}", Input.Role);
+                        ModelState.AddModelError(string.Empty, "Invalid role.");
+                        return Page();
+                    }
+                }
+
+                    // Email confirmation logic continues...
+
+
+                    if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
 

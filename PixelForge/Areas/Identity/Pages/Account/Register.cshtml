@@ -33,6 +33,17 @@
         <label asp-for="Input.LastName">Email</label>
         <span asp-validation-for="Input.Email" class="text-danger"></span>
     </div>
+
+    <div class="form-floating mb-3">
+        <label asp-for="Input.Role"></label>
+        <select asp-for="Input.Role" class="form-control">
+            <option value="">-- Select a role --</option>
+            <option value="User">User</option>
+            <option value="Publisher">Publisher</option>
+        </select>
+        <span asp-validation-for="Input.Role" class="text-danger"></span>
+    </div>
+
     
     <div class="form-floating mb-3">
         <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="" />
