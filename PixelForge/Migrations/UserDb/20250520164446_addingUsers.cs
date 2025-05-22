@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PixelForge.Migrations.UserDb
 {
     /// <inheritdoc />
-    public partial class AddingUsers : Migration
+    public partial class addingUsers : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

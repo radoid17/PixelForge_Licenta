@@ -12,8 +12,8 @@ using PixelForge.Data;
 namespace PixelForge.Migrations.UserDb
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20250509121310_AddingUsers")]
-    partial class AddingUsers
+    [Migration("20250520164446_addingUsers")]
+    partial class addingUsers
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
