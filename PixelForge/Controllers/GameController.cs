@@ -24,6 +24,12 @@ namespace PixelForge.Controllers
             return View(game);
         }
 
+        public async Task<IActionResult> Library()
+        {
+            var game = await _context.Games.ToListAsync();
+            return View(game);
+        }
+
         public IActionResult Create() { 
             return View();
         }

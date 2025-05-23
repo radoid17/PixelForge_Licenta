@@ -144,21 +144,19 @@ namespace PixelForge.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    // ✅ Assign role here
                     if (Input.Role == "User" || Input.Role == "Publisher")
                     {
                         await _userManager.AddToRoleAsync(user, Input.Role);
                     }
                     else
                     {
-                        // Defensive check — should never happen due to model validation
                         _logger.LogWarning("Invalid role tried to be assigned: {Role}", Input.Role);
                         ModelState.AddModelError(string.Empty, "Invalid role.");
                         return Page();
                     }
                 }
 
-                    // Email confirmation logic continues...
+                    
 
 
                     if (result.Succeeded)

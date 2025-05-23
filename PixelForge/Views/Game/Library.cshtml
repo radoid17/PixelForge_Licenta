@@ -1,15 +1,14 @@
 ﻿@model List<PixelForge.Models.Game>
 @{
-    ViewData["Title"] = "Store";
+    ViewData["Title"] = "Library";
 }
 
-<h3>Store</h3>
+<h3>Library</h3>
 
 <table class="table">
     <thead>
         <tr>
             <th>Title</th>
-            <th>Price</th>
             <th></th>
             <th></th>
         </tr>
@@ -19,13 +18,11 @@
         {
             <tr>
                 <td>@game.Title</td>
-                <td>@game.Price.ToString("N2") $</td>
-                <td>Detalis</td>
                 <td>
-                    @if (User.IsInRole("User"))
-                    {
-                        <a class="btn btn-success">Buy</a>
-                    }
+                    <a class="btn btn-primary">Download</a>
+                </td>
+                <td>
+                    <a class="btn btn-primary">Review</a>
                 </td>
             </tr>
         }
