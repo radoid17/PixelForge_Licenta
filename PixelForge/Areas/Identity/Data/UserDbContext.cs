@@ -37,5 +37,13 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
             .HasOne(ug => ug.Game)
             .WithMany(g => g.UserGames)
             .HasForeignKey(ug => ug.GameId);
+
+        builder.Entity<Game>()
+            .HasOne(g => g.Publisher)
+            .WithMany()
+            .HasForeignKey(g => g.PublisherId)
+            .OnDelete(DeleteBehavior.Restrict); // Optional: prevent cascade delete
+
+
     }
 }

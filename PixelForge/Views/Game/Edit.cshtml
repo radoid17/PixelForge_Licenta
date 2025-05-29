@@ -7,6 +7,9 @@
 <h3>Edit an item</h3>
 
 <form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PublisherId" />
+
     <div class="form-group">
         <label for="Title">Title</label>
         <input type="text" class="form-control" asp-for="Title">

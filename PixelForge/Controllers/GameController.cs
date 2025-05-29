@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PixelForge.Models;
 using PixelForge.Areas.Identity.Data;
+using Microsoft.AspNetCore.Identity;
 
 namespace PixelForge.Controllers
 {
@@ -10,17 +11,26 @@ namespace PixelForge.Controllers
     public class GameController : Controller
     {
         private readonly UserDbContext _context;
-        public GameController(UserDbContext context) {  
-            _context = context; 
+        private readonly UserManager<PixelForgeUser> _userManager;
+
+        public GameController(UserDbContext context, UserManager<PixelForgeUser> userManager) {  
+            _context = context;
+            _userManager = userManager;
         }
         public async Task<IActionResult> Index()
         {
-            var game = await _context.Games.ToListAsync();
+            var userId = _userManager.GetUserId(User);
+            var game = await _context.Games
+                .Where(g => g.PublisherId == userId)
+                .ToListAsync();
             return View(game);
         }
         public async Task<IActionResult> Store()
         {
-            var game = await _context.Games.ToListAsync();
+            var game = await _context.Games
+                .Include(g => g.Publisher)
+                .ToListAsync();
+
             return View(game);
         }
 
@@ -38,6 +48,9 @@ namespace PixelForge.Controllers
         {
             if (ModelState.IsValid)
             {
+                var userId = _userManager.GetUserId(User);
+                game.PublisherId = userId;
+
                 _context.Games.Add(game);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -48,10 +61,15 @@ namespace PixelForge.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var game = await _context.Games.FirstOrDefaultAsync(x => x.Id == id);
+            var userId = _userManager.GetUserId(User);
+
+            if (game == null || game.PublisherId != userId)
+                return Unauthorized();
+
             return View(game);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, [Bind("Id, Title, Price")] Game game)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Title, Price, PublisherId")] Game game)
         {
             if (ModelState.IsValid)
             {
@@ -65,6 +83,11 @@ namespace PixelForge.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var game = await _context.Games.FirstOrDefaultAsync(x => x.Id == id);
+            var userId = _userManager.GetUserId(User);
+
+            if (game == null || game.PublisherId != userId)
+                return Unauthorized();
+
             return View(game);
         }
 
