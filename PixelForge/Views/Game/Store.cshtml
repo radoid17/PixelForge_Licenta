@@ -22,7 +22,9 @@
                 <td>@game.Title</td>
                 <td>@game.Price.ToString("N2") $</td>
                 <td>@game.Publisher.FirstName @game.Publisher.SecondName</td>
-                <td>Detalis</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@game.Id">Details</a>
+                </td>
                 <td>
                     @if (User.IsInRole("User"))
                     {

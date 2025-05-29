@@ -40,6 +40,22 @@ namespace PixelForge.Controllers
             return View(game);
         }
 
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var game = await _context.Games
+                .Include(g => g.Publisher)
+                .FirstOrDefaultAsync(g => g.Id == id);
+
+            if (game == null)
+                return NotFound();
+
+            return View(game);
+        }
+
+
         public IActionResult Create() { 
             return View();
         }

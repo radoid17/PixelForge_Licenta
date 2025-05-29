@@ -1,0 +1,19 @@
+﻿@model PixelForge.Models.Game
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>@Model.Title</h2>
+
+<div>
+    <strong>Price:</strong> @Model.Price.ToString("N2")$
+</div>
+
+<div>
+    <strong>Publisher:</strong> @Model.Publisher.FirstName @Model.Publisher.SecondName
+</div>
+
+<!-- Add more details as needed, like Description, ReleaseDate, Genre, etc. -->
+
+<a asp-action="Store">Back to Store</a>
