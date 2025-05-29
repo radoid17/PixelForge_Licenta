@@ -18,3 +18,15 @@
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+@if (ViewBag.Errors != null)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in (IEnumerable<string>)ViewBag.Errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+}

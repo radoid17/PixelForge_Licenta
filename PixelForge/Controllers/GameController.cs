@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using PixelForge.Controllers.Data;
 using PixelForge.Models;
+using PixelForge.Areas.Identity.Data;
 
 namespace PixelForge.Controllers
 {
     [Authorize]
     public class GameController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        public GameController(ApplicationDbContext context) {  
+        private readonly UserDbContext _context;
+        public GameController(UserDbContext context) {  
             _context = context; 
         }
         public async Task<IActionResult> Index()

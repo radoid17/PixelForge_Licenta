@@ -1,7 +1,5 @@
-using PixelForge.Controllers.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using PixelForge.Data;
 using PixelForge.Areas.Identity.Data;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -19,10 +17,7 @@ namespace PixelForge
             builder.Services.AddRazorPages();
 
 
-            builder.Services.AddDbContext<ApplicationDbContext>(options => 
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
-
-            builder.Services.AddDbContext<UserDbContext>(options =>
+            builder.Services.AddDbContext<UserDbContext>(options => 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
 
             builder.Services.AddDefaultIdentity<PixelForgeUser>(options => options.SignIn.RequireConfirmedAccount = true)

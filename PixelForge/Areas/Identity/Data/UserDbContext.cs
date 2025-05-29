@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PixelForge.Areas.Identity.Data;
+using PixelForge.Models;
+using System.Reflection.Emit;
 
-namespace PixelForge.Data;
+namespace PixelForge.Areas.Identity.Data;
 
 public class UserDbContext : IdentityDbContext<PixelForgeUser>
 {
@@ -12,11 +14,28 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
     {
     }
 
+    public DbSet<PixelForgeUser> Users { get; set; }
+    public DbSet<UserGame> UserGames { get; set; }
+    public DbSet<Game> Games { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
         // Customize the ASP.NET Identity model and override the defaults if needed.
         // For example, you can rename the ASP.NET Identity table names and more.
         // Add your customizations after calling base.OnModelCreating(builder);
+
+        builder.Entity<UserGame>()
+            .HasKey(ug => new { ug.UserId, ug.GameId });
+
+        builder.Entity<UserGame>()
+            .HasOne(ug => ug.User)
+            .WithMany(u => u.UserGames)
+            .HasForeignKey(ug => ug.UserId);
+
+        builder.Entity<UserGame>()
+            .HasOne(ug => ug.Game)
+            .WithMany(g => g.UserGames)
+            .HasForeignKey(ug => ug.GameId);
     }
 }

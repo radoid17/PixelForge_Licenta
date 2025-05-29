@@ -2,10 +2,10 @@
 
 #nullable disable
 
-namespace PixelForge.Migrations.UserDb
+namespace PixelForge.Migrations
 {
     /// <inheritdoc />
-    public partial class userRoles : Migration
+    public partial class AnotherOne : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
