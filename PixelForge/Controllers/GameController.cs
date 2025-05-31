@@ -36,9 +36,19 @@ namespace PixelForge.Controllers
 
         public async Task<IActionResult> Library()
         {
-            var game = await _context.Games.ToListAsync();
-            return View(game);
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+                return Challenge();
+
+            var ownedGames = await _context.UserGames
+                .Where(ug => ug.UserId == userId)
+                .Include(ug => ug.Game)
+                .Select(ug => ug.Game)
+                .ToListAsync();
+
+            return View(ownedGames);
         }
+
 
         public async Task<IActionResult> Details(int? id)
         {

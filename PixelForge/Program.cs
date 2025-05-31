@@ -16,6 +16,13 @@ namespace PixelForge
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
 
             builder.Services.AddDbContext<UserDbContext>(options => 
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
@@ -36,6 +43,7 @@ namespace PixelForge
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseSession();
 
             app.UseAuthorization();
 
