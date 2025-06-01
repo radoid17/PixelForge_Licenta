@@ -5,12 +5,24 @@
 
 <h3>Store</h3>
 
-<table class="table">
+<div class="row">
+    <div class="col-md-6">
+        <form class="d-flex" asp-action="Store" asp-controller="Game">
+            <input name="searchString" class="form-control me-1 w-50" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-dark" type="submit">Search By Title</button>
+        </form>
+    </div>
+    <div class="col-md-10 mt-3">
+        <a asp-action="Store" class="text-dark">Back to Full List</a>
+    </div>
+</div>
+
+<table class="table mt-3">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Price</th>
-            <th>Publisher</th>
+            <th><a class="text-dark" asp-controller="Game" asp-action="Store" asp-route-sortOrder=@ViewData["NameSortParam"]>Title</a></th>
+            <th><a class="text-dark" asp-controller="Game" asp-action="Store" asp-route-sortOrder=@ViewData["PriceSortParam"]>Price</a></th>
+            <th><a class="text-dark" asp-controller="Game" asp-action="Store" asp-route-sortOrder=@ViewData["PublisherSortParam"]>Publisher</a></th>
             <th></th>
             <th></th>
         </tr>

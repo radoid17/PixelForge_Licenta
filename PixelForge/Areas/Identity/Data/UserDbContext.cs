@@ -21,9 +21,6 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        // Customize the ASP.NET Identity model and override the defaults if needed.
-        // For example, you can rename the ASP.NET Identity table names and more.
-        // Add your customizations after calling base.OnModelCreating(builder);
 
         builder.Entity<UserGame>()
             .HasKey(ug => new { ug.UserId, ug.GameId });
@@ -42,7 +39,7 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
             .HasOne(g => g.Publisher)
             .WithMany()
             .HasForeignKey(g => g.PublisherId)
-            .OnDelete(DeleteBehavior.Restrict); // Optional: prevent cascade delete
+            .OnDelete(DeleteBehavior.Restrict);
 
 
     }
