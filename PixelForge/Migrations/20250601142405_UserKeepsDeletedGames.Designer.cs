@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PixelForge.Areas.Identity.Data;
 
@@ -11,9 +12,11 @@ using PixelForge.Areas.Identity.Data;
 namespace PixelForge.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    partial class UserDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250601142405_UserKeepsDeletedGames")]
+    partial class UserKeepsDeletedGames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -260,41 +263,6 @@ namespace PixelForge.Migrations
                     b.ToTable("Games");
                 });
 
-            modelBuilder.Entity("PixelForge.Models.Review", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Reviews");
-                });
-
             modelBuilder.Entity("PixelForge.Models.UserGame", b =>
                 {
                     b.Property<string>("UserId")
@@ -371,25 +339,6 @@ namespace PixelForge.Migrations
                     b.Navigation("Publisher");
                 });
 
-            modelBuilder.Entity("PixelForge.Models.Review", b =>
-                {
-                    b.HasOne("PixelForge.Models.Game", "Game")
-                        .WithMany("Reviews")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("PixelForge.Areas.Identity.Data.PixelForgeUser", "User")
-                        .WithMany("Reviews")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Game");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("PixelForge.Models.UserGame", b =>
                 {
                     b.HasOne("PixelForge.Models.Game", "Game")
@@ -411,15 +360,11 @@ namespace PixelForge.Migrations
 
             modelBuilder.Entity("PixelForge.Areas.Identity.Data.PixelForgeUser", b =>
                 {
-                    b.Navigation("Reviews");
-
                     b.Navigation("UserGames");
                 });
 
             modelBuilder.Entity("PixelForge.Models.Game", b =>
                 {
-                    b.Navigation("Reviews");
-
                     b.Navigation("UserGames");
                 });
 #pragma warning restore 612, 618

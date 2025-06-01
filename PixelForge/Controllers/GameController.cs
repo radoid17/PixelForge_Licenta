@@ -30,6 +30,7 @@ namespace PixelForge.Controllers
         {
             var game = await _context.Games
                 .Include(g => g.Publisher)
+                .Where(g => !g.IsDeleted)
                 .ToListAsync();
 
             if (!String.IsNullOrEmpty(searchString))
@@ -118,6 +119,7 @@ namespace PixelForge.Controllers
                 .Include(g => g.Publisher)
                 .FirstOrDefaultAsync(g => g.Id == id);
 
+
             if (game == null)
                 return NotFound();
 
@@ -180,8 +182,9 @@ namespace PixelForge.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var game = await _context.Games.FindAsync(id);
-            if (game != null) { 
-                _context.Games.Remove(game);
+            if (game != null) {
+                game.IsDeleted = true;
+                _context.Games.Update(game);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
