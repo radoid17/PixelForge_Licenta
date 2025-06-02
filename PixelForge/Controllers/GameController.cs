@@ -118,8 +118,9 @@ namespace PixelForge.Controllers
 
             var game = await _context.Games
                 .Include(g => g.Publisher)
+                .Include(g => g.Reviews)
+                    .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(g => g.Id == id);
-
 
             if (game == null)
                 return NotFound();

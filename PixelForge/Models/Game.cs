@@ -11,6 +11,8 @@ namespace PixelForge.Models
         public string? PublisherId { get; set; }
         public PixelForgeUser? Publisher { get; set; }
         public ICollection<UserGame>? UserGames { get; set; }
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
         public bool IsDeleted { get; set; } = false;
     }
 }
