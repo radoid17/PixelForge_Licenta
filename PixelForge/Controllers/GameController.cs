@@ -23,6 +23,7 @@ namespace PixelForge.Controllers
             var userId = _userManager.GetUserId(User);
             var game = await _context.Games
                 .Where(g => g.PublisherId == userId)
+                .Where(g => !g.IsDeleted)
                 .ToListAsync();
             return View(game);
         }
