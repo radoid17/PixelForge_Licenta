@@ -132,20 +132,54 @@ namespace PixelForge.Controllers
         public IActionResult Create() { 
             return View();
         }
-        [HttpPost] 
-        public async Task<IActionResult> Create([Bind("Id, Title, Price")] Game game)
+        [HttpPost]
+        public async Task<IActionResult> Create([Bind("Id, Title, Price")] Game game, IFormFile gameFile)
         {
-            if (ModelState.IsValid)
-            {
-                var userId = _userManager.GetUserId(User);
-                game.PublisherId = userId;
+            var allowedExtensions = new[] { ".zip", ".rar", ".exe", ".msi" };
+            var errors = new List<string>();
 
-                _context.Games.Add(game);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+            if (gameFile == null || gameFile.Length == 0)
+            {
+                errors.Add("Please upload a game file.");
             }
-            return View(game);
+            else
+            {
+                var extension = Path.GetExtension(gameFile.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(extension))
+                {
+                    errors.Add("Only .zip, .rar, .exe, and .msi files are allowed.");
+                }
+            }
+
+            if (!ModelState.IsValid || errors.Count > 0)
+            {
+                ViewBag.Errors = errors;
+                return View(game);
+            }
+
+            var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            if (!Directory.Exists(uploadsPath))
+            {
+                Directory.CreateDirectory(uploadsPath);
+            }
+
+            var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(gameFile.FileName)}";
+            var fullPath = Path.Combine(uploadsPath, uniqueFileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await gameFile.CopyToAsync(stream);
+            }
+
+            game.GameFilePath = $"/uploads/{uniqueFileName}";
+
+            game.PublisherId = _userManager.GetUserId(User);
+            _context.Games.Add(game);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
+
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -191,5 +225,38 @@ namespace PixelForge.Controllers
             }
             return RedirectToAction("Index");
         }
+
+
+        public async Task<IActionResult> Download(int id)
+        {
+            var userId = _userManager.GetUserId(User);
+            var hasGame = await _context.UserGames.AnyAsync(ug => ug.UserId == userId && ug.GameId == id);
+
+            if (!hasGame)
+                return Unauthorized();
+
+            var game = await _context.Games.FirstOrDefaultAsync(g => g.Id == id);
+
+            if (game == null || string.IsNullOrEmpty(game.GameFilePath))
+                return NotFound();
+
+            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", game.GameFilePath.TrimStart('/'));
+
+            if (!System.IO.File.Exists(fullPath))
+                return NotFound("File not found on server.");
+
+            var fileName = Path.GetFileName(fullPath);
+            var contentType = "application/octet-stream";
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(fullPath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+
+            return File(memory, contentType, fileName);
+        }
+
     }
 }

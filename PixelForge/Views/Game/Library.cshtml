@@ -32,8 +32,16 @@
             <tr>
                 <td>@ownedGames.Title</td>
                 <td>
-                    <a class="btn btn-primary">Download</a>
+                    @if (!string.IsNullOrEmpty(ownedGames.GameFilePath))
+                    {
+                        <a asp-action="Download" asp-route-id="@ownedGames.Id" class="btn btn-primary">Download</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No File</span>
+                    }
                 </td>
+
                 <td>
                     <form asp-controller="Review" asp-action="Create" method="post" class="d-inline">
                         <input type="hidden" name="gameId" value="@ownedGames.Id" />
