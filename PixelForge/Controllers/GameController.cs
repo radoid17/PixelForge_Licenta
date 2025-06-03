@@ -27,17 +27,41 @@ namespace PixelForge.Controllers
                 .ToListAsync();
             return View(game);
         }
-        public async Task<IActionResult> Store(string searchString, string sortOrder)
+        public async Task<IActionResult> Store(string searchString, string sortOrder, string genreFilter, double? minPrice, double? maxPrice, string ageFilter)
         {
             var game = await _context.Games
                 .Include(g => g.Publisher)
                 .Where(g => !g.IsDeleted)
                 .ToListAsync();
 
-            if (!String.IsNullOrEmpty(searchString))
+            // 🔍 Filtrare după titlu
+            if (!string.IsNullOrEmpty(searchString))
             {
-                game = game.Where(game => game.Title.Contains(searchString)).ToList();
+                game = game.Where(g => g.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
             }
+
+            // 🔍 Filtrare după gen
+            if (!string.IsNullOrEmpty(genreFilter))
+            {
+                game = game.Where(g => g.Genre.Equals(genreFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // 🔍 Filtrare după preț
+            if (minPrice.HasValue)
+            {
+                game = game.Where(g => g.Price >= minPrice.Value).ToList();
+            }
+            if (maxPrice.HasValue)
+            {
+                game = game.Where(g => g.Price <= maxPrice.Value).ToList();
+            }
+
+            // 🔍 Filtrare după rating vârstă
+            if (!string.IsNullOrEmpty(ageFilter))
+            {
+                game = game.Where(g => g.AgeRating.ToString() == ageFilter).ToList();
+            }
+
 
             ViewData["NameSortParam"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
             ViewData["PriceSortParam"] = sortOrder == "price_asc" ? "price_desc" : "price_asc";
@@ -91,7 +115,7 @@ namespace PixelForge.Controllers
             return View(game);
         }
 
-        public async Task<IActionResult> Library(string searchString, string sortOrder)
+        public async Task<IActionResult> Library(string searchString, string sortOrder, string genreFilter, string ageFilter)
         {
             var userId = _userManager.GetUserId(User);
             if (userId == null)
@@ -103,9 +127,21 @@ namespace PixelForge.Controllers
                 .Select(ug => ug.Game)
                 .ToListAsync();
 
-            if (!String.IsNullOrEmpty(searchString))
+            if (!string.IsNullOrEmpty(searchString))
             {
-                ownedGames = ownedGames.Where(g => g.Title.Contains(searchString)).ToList();
+                ownedGames = ownedGames.Where(g => g.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // 🔍 Filtrare după gen
+            if (!string.IsNullOrEmpty(genreFilter))
+            {
+                ownedGames = ownedGames.Where(g => g.Genre.Equals(genreFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // 🔍 Filtrare după rating vârstă
+            if (!string.IsNullOrEmpty(ageFilter))
+            {
+                ownedGames = ownedGames.Where(g => g.AgeRating.ToString() == ageFilter).ToList();
             }
 
             ViewData["NameSortParam"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";

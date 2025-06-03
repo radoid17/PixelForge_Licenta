@@ -5,17 +5,35 @@
 
 <h3>Store</h3>
 
-<div class="row">
-    <div class="col-md-6">
-        <form class="d-flex" asp-action="Store" asp-controller="Game">
-            <input name="searchString" class="form-control me-1 w-50" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-dark" type="submit">Search By Title</button>
-        </form>
+<form class="row mb-3" asp-action="Store" method="get">
+    <div class="col-md-3">
+        <input type="text" class="form-control" name="searchString" placeholder="Title" value="@Context.Request.Query["searchString"]" />
+    </div>
+    <div class="col-md-2">
+        <input type="text" class="form-control" name="genreFilter" placeholder="Genre" value="@Context.Request.Query["genreFilter"]" />
+    </div>
+    <div class="col-md-2">
+        <input type="number" class="form-control" name="minPrice" step="0.01" placeholder="Min Price" value="@Context.Request.Query["minPrice"]" />
+    </div>
+    <div class="col-md-2">
+        <input type="number" class="form-control" name="maxPrice" step="0.01" placeholder="Max Price" value="@Context.Request.Query["maxPrice"]" />
+    </div>
+    <div class="col-md-2">
+        <select class="form-control" name="ageFilter">
+            <option value="">Any Rating</option>
+            @foreach (var rating in Enum.GetNames(typeof(PixelForge.Models.AgeRating)))
+            {
+                <option value="@rating" selected="@(rating == Context.Request.Query["ageFilter"] ? "selected" : null)">@rating</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-1">
+        <button type="submit" class="btn btn-dark w-100">Filter</button>
     </div>
     <div class="col-md-10 mt-3">
         <a asp-action="Store" class="text-dark">Back to Full List</a>
     </div>
-</div>
+</form>
 
 <table class="table mt-3">
     <thead>
