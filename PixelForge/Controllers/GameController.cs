@@ -339,5 +339,25 @@ namespace PixelForge.Controllers
             return File(memory, contentType, fileName);
         }
 
+        public async Task<IActionResult> Statistics()
+        {
+            var topGames = await _context.Games
+                .Include(g => g.UserGames)
+                .OrderByDescending(g => g.UserGames.Count)
+                .Take(5)
+                .Select(g => new
+                {
+                    Title = g.Title,
+                    BuyerCount = g.UserGames.Count
+                })
+                .ToListAsync();
+
+            ViewBag.Labels = topGames.Select(g => g.Title).ToList();
+            ViewBag.Data = topGames.Select(g => g.BuyerCount).ToList();
+
+            return View();
+        }
+
+
     }
 }

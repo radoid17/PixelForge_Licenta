@@ -16,7 +16,6 @@
 
 <div><strong>Owned by:</strong> @ViewBag.OwnersCount user(s)</div>
 
-
 <h4>Average Rating: @(Model.Reviews.Any() ? Model.Reviews.Average(r => r.Rating).ToString("0.0") : "No ratings") / 5</h4>
 
 @if (Model.Reviews.Any())

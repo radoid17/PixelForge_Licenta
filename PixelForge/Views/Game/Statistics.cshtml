@@ -1,0 +1,35 @@
+﻿@{
+    ViewData["Title"] = "Top Games Sold";
+    var labels = ViewBag.Labels as List<string>;
+    var data = ViewBag.Data as List<int>;
+}
+
+<h2 class="text-center">Top 5 Most Purchased Games</h2>
+<canvas id="salesChart" width="800" height="400"></canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(Json.Serialize(labels)),
+            datasets: [{
+                label: 'Sales Number',
+                data: @Html.Raw(Json.Serialize(data)),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+</script>
