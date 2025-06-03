@@ -19,6 +19,7 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
     public DbSet<Game> Games { get; set; }
     public DbSet<Review> Reviews { get; set; }
 
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -43,8 +44,8 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<Review>()
-        .HasIndex(r => new { r.UserId, r.GameId })
-        .IsUnique();
+            .HasIndex(r => new { r.UserId, r.GameId })
+            .IsUnique();
 
         builder.Entity<Review>()
             .HasOne(r => r.User)

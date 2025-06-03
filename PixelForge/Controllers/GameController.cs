@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PixelForge.Models;
 using PixelForge.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
-using PixelForge.Migrations;
+//using PixelForge.Migrations;
 
 namespace PixelForge.Controllers
 {
@@ -34,19 +34,16 @@ namespace PixelForge.Controllers
                 .Where(g => !g.IsDeleted)
                 .ToListAsync();
 
-            // 🔍 Filtrare după titlu
             if (!string.IsNullOrEmpty(searchString))
             {
                 game = game.Where(g => g.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // 🔍 Filtrare după gen
             if (!string.IsNullOrEmpty(genreFilter))
             {
                 game = game.Where(g => g.Genre.Equals(genreFilter, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // 🔍 Filtrare după preț
             if (minPrice.HasValue)
             {
                 game = game.Where(g => g.Price >= minPrice.Value).ToList();
@@ -56,7 +53,6 @@ namespace PixelForge.Controllers
                 game = game.Where(g => g.Price <= maxPrice.Value).ToList();
             }
 
-            // 🔍 Filtrare după rating vârstă
             if (!string.IsNullOrEmpty(ageFilter))
             {
                 game = game.Where(g => g.AgeRating.ToString() == ageFilter).ToList();

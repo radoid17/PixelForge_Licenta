@@ -54,20 +54,7 @@
                         <span class="text-muted">No File</span>
                     }
                 </td>
-
-                <td>
-                    <form asp-controller="Review" asp-action="Create" method="post" class="d-inline">
-                        <input type="hidden" name="gameId" value="@ownedGames.Id" />
-                        <select name="rating" class="form-select d-inline w-auto">
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                <option value="@i">@i</option>
-                            }
-                        </select>
-                        <input name="comment" placeholder="Comment" class="form-control d-inline w-auto" />
-                        <button type="submit" class="btn btn-primary">Review</button>
-                    </form>
-                </td>
+                <td><a asp-controller="Review" asp-action="Create" asp-route-gameId="@ownedGames.Id" class="btn btn-outline-primary">Review</a></td>
 
             </tr>
         }

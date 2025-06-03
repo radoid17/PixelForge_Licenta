@@ -7,7 +7,7 @@ using PixelForge.Models;
 
 namespace PixelForge.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "User")]
     public class ReviewController : Controller
     {
         private readonly UserDbContext _context;
@@ -19,7 +19,31 @@ namespace PixelForge.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Create(int gameId)
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var alreadyReviewed = await _context.Reviews
+                .AnyAsync(r => r.GameId == gameId && r.UserId == user.Id);
+
+            if (alreadyReviewed)
+            {
+                TempData["Error"] = "You already reviewed this game.";
+                return RedirectToAction("Library", "Game");
+            }
+
+            var game = await _context.Games.FirstOrDefaultAsync(g => g.Id == gameId);
+            if (game == null)
+                return NotFound();
+
+            ViewBag.GameTitle = game.Title;
+            ViewBag.GameId = gameId;
+            return View();
+        }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int gameId, int rating, string comment)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -28,7 +52,10 @@ namespace PixelForge.Controllers
                 .AnyAsync(r => r.GameId == gameId && r.UserId == user.Id);
 
             if (alreadyReviewed)
-                return BadRequest("You already reviewed this game.");
+            {
+                TempData["Error"] = "You already reviewed this game.";
+                return RedirectToAction("Library", "Game");
+            }
 
             var review = new Review
             {
@@ -41,6 +68,7 @@ namespace PixelForge.Controllers
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync();
 
+            TempData["Success"] = "Review submitted successfully!";
             return RedirectToAction("Library", "Game");
         }
     }
