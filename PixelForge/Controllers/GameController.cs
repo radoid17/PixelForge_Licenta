@@ -198,6 +198,9 @@ namespace PixelForge.Controllers
                 .Include(g => g.Publisher)
                 .Include(g => g.Reviews)
                     .ThenInclude(r => r.User)
+                .Include(g => g.Reviews)
+                    .ThenInclude(r => r.Votes)
+
                 .FirstOrDefaultAsync(g => g.Id == id);
 
             var ownersCount = await _context.UserGames.CountAsync(ug => ug.GameId == game.Id);

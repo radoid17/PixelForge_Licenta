@@ -4,11 +4,11 @@ namespace PixelForge.Models
 {
     public enum AgeRating
     {
-        E,      // Everyone
-        E10,    // Everyone 10+
-        T,      // Teen
-        M,      // Mature
-        AO      // Adults Only
+        E,
+        E10,
+        T,
+        M,
+        AO
     }
 
     public class Game

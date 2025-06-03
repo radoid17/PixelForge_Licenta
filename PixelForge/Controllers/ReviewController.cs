@@ -71,5 +71,43 @@ namespace PixelForge.Controllers
             TempData["Success"] = "Review submitted successfully!";
             return RedirectToAction("Library", "Game");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Vote(int reviewId, bool isLike)
+        {
+            var userId = _userManager.GetUserId(User);
+
+            var vote = await _context.ReviewVotes
+                .FirstOrDefaultAsync(rv => rv.UserId == userId && rv.ReviewId == reviewId);
+
+            if (vote != null)
+            {
+                if (vote.IsLike == isLike)
+                {
+                    _context.ReviewVotes.Remove(vote);
+                }
+                else
+                {
+                    vote.IsLike = isLike;
+                    _context.ReviewVotes.Update(vote);
+                }
+            }
+            else
+            {
+                var newVote = new ReviewVote
+                {
+                    UserId = userId,
+                    ReviewId = reviewId,
+                    IsLike = isLike
+                };
+                _context.ReviewVotes.Add(newVote);
+            }
+
+            await _context.SaveChangesAsync();
+
+            var review = await _context.Reviews.FindAsync(reviewId);
+            return RedirectToAction("Details", "Game", new { id = review.GameId });
+        }
+
     }
 }

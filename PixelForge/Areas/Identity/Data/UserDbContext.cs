@@ -18,7 +18,7 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
     public DbSet<UserGame> UserGames { get; set; }
     public DbSet<Game> Games { get; set; }
     public DbSet<Review> Reviews { get; set; }
-
+    public DbSet<ReviewVote> ReviewVotes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -58,5 +58,21 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
             .WithMany(g => g.Reviews)
             .HasForeignKey(r => r.GameId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<ReviewVote>()
+            .HasKey(rv => new { rv.UserId, rv.ReviewId });
+
+        builder.Entity<ReviewVote>()
+            .HasOne(rv => rv.User)
+            .WithMany()
+            .HasForeignKey(rv => rv.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<ReviewVote>()
+            .HasOne(rv => rv.Review)
+            .WithMany(r => r.Votes)
+            .HasForeignKey(rv => rv.ReviewId)
+            .OnDelete(DeleteBehavior.Restrict);
+
     }
 }

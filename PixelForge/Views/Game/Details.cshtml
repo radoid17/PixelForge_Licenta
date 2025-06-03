@@ -28,17 +28,41 @@
         }
         <span> (@average.ToString("0.0") / 5)</span>
     </div>
-    @foreach (var review in Model.Reviews)
-    {
-        <li>
-            <strong>@review.User.FirstName @review.User.SecondName</strong> rated @review.Rating/5
-            <p>@review.Comment</p>
-        </li>
-    }
 }
 else
 {
     <p>No reviews yet.</p>
 }
+
+@foreach (var review in Model.Reviews)
+{
+    <li>
+        <strong>@review.User.FirstName @review.User.SecondName</strong> rated @review.Rating/5
+        <p>@review.Comment</p>
+
+        <form method="post" asp-controller="Review" asp-action="Vote" style="display:inline;">
+            <input type="hidden" name="reviewId" value="@review.Id" />
+            <input type="hidden" name="isLike" value="true" />
+            <button type="submit" class="btn btn-success btn-sm">
+                👍
+                (@(Model.Reviews
+                   .First(r => r.Id == review.Id)
+                   .Votes?.Count(v => v.IsLike) ?? 0))
+            </button>
+        </form>
+
+        <form method="post" asp-controller="Review" asp-action="Vote" style="display:inline;">
+            <input type="hidden" name="reviewId" value="@review.Id" />
+            <input type="hidden" name="isLike" value="false" />
+            <button type="submit" class="btn btn-danger btn-sm">
+                👎
+                (@(Model.Reviews
+                   .First(r => r.Id == review.Id)
+                   .Votes?.Count(v => !v.IsLike) ?? 0))
+            </button>
+        </form>
+    </li>
+}
+
 
 <a asp-action="Store">Back to Store</a>
