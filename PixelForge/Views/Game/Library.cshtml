@@ -17,13 +17,12 @@
     </div>
 </div>
 
-
 <table class="table">
     <thead>
         <tr>
             <th><a class="text-dark" asp-controller="Game" asp-action="Library" asp-route-sortOrder=@ViewData["NameSortParam"]>Title</a></th>
-            <th></th>
-            <th></th>
+            <th><a class="text-dark" asp-controller="Game" asp-action="Library" asp-route-sortOrder="@ViewData["GenreSortParam"]">Genre</a></th>
+            <th><a class="text-dark" asp-controller="Game" asp-action="Library" asp-route-sortOrder="@ViewData["AgeSortParam"]">Age Rating</a></th>
         </tr>
     </thead>
     <tbody>
@@ -31,6 +30,8 @@
         {
             <tr>
                 <td>@ownedGames.Title</td>
+                <td>@ownedGames.Genre</td>
+                <td>@ownedGames.AgeRating</td>
                 <td>
                     @if (!string.IsNullOrEmpty(ownedGames.GameFilePath))
                     {

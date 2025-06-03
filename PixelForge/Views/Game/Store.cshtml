@@ -21,6 +21,8 @@
     <thead>
         <tr>
             <th><a class="text-dark" asp-controller="Game" asp-action="Store" asp-route-sortOrder=@ViewData["NameSortParam"]>Title</a></th>
+            <th><a class="text-dark" asp-controller="Game" asp-action="Store" asp-route-sortOrder="@ViewData["GenreSortParam"]">Genre</a></th>
+            <th><a class="text-dark" asp-controller="Game" asp-action="Store" asp-route-sortOrder="@ViewData["AgeSortParam"]">Age Rating</a></th>
             <th><a class="text-dark" asp-controller="Game" asp-action="Store" asp-route-sortOrder=@ViewData["PriceSortParam"]>Price</a></th>
             <th><a class="text-dark" asp-controller="Game" asp-action="Store" asp-route-sortOrder=@ViewData["PublisherSortParam"]>Publisher</a></th>
             <th></th>
@@ -32,6 +34,8 @@
         {
             <tr>
                 <td>@game.Title</td>
+                <td>@game.Genre</td>
+                <td>@game.AgeRating</td>
                 <td>@game.Price.ToString("N2") $</td>
                 <td>@game.Publisher.FirstName @game.Publisher.SecondName</td>
                 <td>

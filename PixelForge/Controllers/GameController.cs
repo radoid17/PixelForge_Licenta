@@ -42,6 +42,9 @@ namespace PixelForge.Controllers
             ViewData["NameSortParam"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
             ViewData["PriceSortParam"] = sortOrder == "price_asc" ? "price_desc" : "price_asc";
             ViewData["PublisherSortParam"] = sortOrder == "publisher_asc" ? "publisher_desc" : "publisher_asc";
+            ViewData["GenreSortParam"] = sortOrder == "genre_asc" ? "genre_desc" : "genre_asc";
+            ViewData["AgeSortParam"] = sortOrder == "age_asc" ? "age_desc" : "age_asc";
+
 
             switch (sortOrder)
             {
@@ -64,6 +67,20 @@ namespace PixelForge.Controllers
                     break;
                 case "publisher_asc":
                     game = game.OrderBy(g => g.Publisher.FirstName + " " + g.Publisher.SecondName).ToList();
+                    break;
+
+                case "genre_desc":
+                    game = game.OrderByDescending(g => g.Genre).ToList();
+                    break;
+                case "genre_asc":
+                    game = game.OrderBy(g => g.Genre).ToList();
+                    break;
+
+                case "age_desc":
+                    game = game.OrderByDescending(g => g.AgeRating).ToList();
+                    break;
+                case "age_asc":
+                    game = game.OrderBy(g => g.AgeRating).ToList();
                     break;
 
                 default:
@@ -92,6 +109,9 @@ namespace PixelForge.Controllers
             }
 
             ViewData["NameSortParam"] = sortOrder == "name_asc" ? "name_desc" : "name_asc";
+            ViewData["GenreSortParam"] = sortOrder == "genre_asc" ? "genre_desc" : "genre_asc";
+            ViewData["AgeSortParam"] = sortOrder == "age_asc" ? "age_desc" : "age_asc";
+
 
             switch (sortOrder)
             {
@@ -100,6 +120,20 @@ namespace PixelForge.Controllers
                     break;
                 case "name_asc":
                     ownedGames = ownedGames.OrderBy(g => g.Title).ToList();
+                    break;
+
+                case "genre_desc":
+                    ownedGames = ownedGames.OrderByDescending(g => g.Genre).ToList();
+                    break;
+                case "genre_asc":
+                    ownedGames = ownedGames.OrderBy(g => g.Genre).ToList();
+                    break;
+
+                case "age_desc":
+                    ownedGames = ownedGames.OrderByDescending(g => g.AgeRating).ToList();
+                    break;
+                case "age_asc":
+                    ownedGames = ownedGames.OrderBy(g => g.AgeRating).ToList();
                     break;
 
                 default:
@@ -133,7 +167,7 @@ namespace PixelForge.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create([Bind("Id, Title, Price")] Game game, IFormFile gameFile)
+        public async Task<IActionResult> Create([Bind("Id, Title, Price, Genre, AgeRating")] Game game, IFormFile gameFile)
         {
             var allowedExtensions = new[] { ".zip", ".rar", ".exe", ".msi" };
             var errors = new List<string>();
@@ -192,7 +226,7 @@ namespace PixelForge.Controllers
             return View(game);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, [Bind("Id, Title, Price, PublisherId")] Game game)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Title, Price, PublisherId, Genre, AgeRating, GameFilePath")] Game game)
         {
             if (ModelState.IsValid)
             {

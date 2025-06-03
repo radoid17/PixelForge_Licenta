@@ -2,12 +2,25 @@
 using System.ComponentModel.DataAnnotations;
 namespace PixelForge.Models
 {
+    public enum AgeRating
+    {
+        E,      // Everyone
+        E10,    // Everyone 10+
+        T,      // Teen
+        M,      // Mature
+        AO      // Adults Only
+    }
+
     public class Game
     {
         [Key]
         public int Id { get; set; }
         public string Title { get; set; }
         public double Price { get; set; }
+        public string Genre { get; set; } = string.Empty;
+
+        [Display(Name = "Age Rating")]
+        public AgeRating AgeRating { get; set; }
         public string? PublisherId { get; set; }
         public PixelForgeUser? Publisher { get; set; }
         public ICollection<UserGame>? UserGames { get; set; }

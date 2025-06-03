@@ -11,21 +11,26 @@
     <thead>
         <tr>
             <th>Title</th>
+            <th>Genre</th>
+            <th>Age Rating</th>
             <th>Price</th>
             <th></th>
         </tr>
     </thead>
+
     <tbody>
-        @foreach(var game in Model)
+        @foreach (var game in Model)
         {
             <tr>
                 <td>@game.Title</td>
+                <td>@game.Genre</td>
+                <td>@game.AgeRating</td>
                 <td>@game.Price.ToString("N2") $</td>
                 <td>
-                    <a class = "btn btn-info" asp-action="Edit" asp-route-id="@game.Id">Edit</a>
-                    <a class = "btn btn-danger" asp-action="Delete" asp-route-id="@game.Id">Delete</a>
+                    <a class="btn btn-info" asp-action="Edit" asp-route-id="@game.Id">Edit</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@game.Id">Delete</a>
                 </td>
-            </tr>    
+            </tr>
         }
     </tbody>
 </table>
