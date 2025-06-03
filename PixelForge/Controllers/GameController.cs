@@ -68,49 +68,61 @@ namespace PixelForge.Controllers
             ViewData["PublisherSortParam"] = sortOrder == "publisher_asc" ? "publisher_desc" : "publisher_asc";
             ViewData["GenreSortParam"] = sortOrder == "genre_asc" ? "genre_desc" : "genre_asc";
             ViewData["AgeSortParam"] = sortOrder == "age_asc" ? "age_desc" : "age_asc";
+            ViewData["PopularitySortParam"] = sortOrder == "popularity_asc" ? "popularity_desc" : "popularity_asc";
 
+
+
+            var gameWithCounts = game.Select(g => new
+            {
+                Game = g,
+                OwnersCount = _context.UserGames.Count(ug => ug.GameId == g.Id)
+            }).ToList();
 
             switch (sortOrder)
             {
                 case "name_desc":
-                    game = game.OrderByDescending(g => g.Title).ToList();
+                    gameWithCounts = gameWithCounts.OrderByDescending(g => g.Game.Title).ToList();
                     break;
                 case "name_asc":
-                    game = game.OrderBy(g => g.Title).ToList();
+                    gameWithCounts = gameWithCounts.OrderBy(g => g.Game.Title).ToList();
                     break;
-
                 case "price_desc":
-                    game = game.OrderByDescending(g => g.Price).ToList();
+                    gameWithCounts = gameWithCounts.OrderByDescending(g => g.Game.Price).ToList();
                     break;
                 case "price_asc":
-                    game = game.OrderBy(g => g.Price).ToList();
+                    gameWithCounts = gameWithCounts.OrderBy(g => g.Game.Price).ToList();
                     break;
-
                 case "publisher_desc":
-                    game = game.OrderByDescending(g => g.Publisher.FirstName + " " + g.Publisher.SecondName).ToList();
+                    gameWithCounts = gameWithCounts.OrderByDescending(g => g.Game.Publisher.FirstName + " " + g.Game.Publisher.SecondName).ToList();
                     break;
                 case "publisher_asc":
-                    game = game.OrderBy(g => g.Publisher.FirstName + " " + g.Publisher.SecondName).ToList();
+                    gameWithCounts = gameWithCounts.OrderBy(g => g.Game.Publisher.FirstName + " " + g.Game.Publisher.SecondName).ToList();
                     break;
-
                 case "genre_desc":
-                    game = game.OrderByDescending(g => g.Genre).ToList();
+                    gameWithCounts = gameWithCounts.OrderByDescending(g => g.Game.Genre).ToList();
                     break;
                 case "genre_asc":
-                    game = game.OrderBy(g => g.Genre).ToList();
+                    gameWithCounts = gameWithCounts.OrderBy(g => g.Game.Genre).ToList();
                     break;
-
                 case "age_desc":
-                    game = game.OrderByDescending(g => g.AgeRating).ToList();
+                    gameWithCounts = gameWithCounts.OrderByDescending(g => g.Game.AgeRating).ToList();
                     break;
                 case "age_asc":
-                    game = game.OrderBy(g => g.AgeRating).ToList();
+                    gameWithCounts = gameWithCounts.OrderBy(g => g.Game.AgeRating).ToList();
                     break;
-
+                case "popularity_desc":
+                    gameWithCounts = gameWithCounts.OrderByDescending(g => g.OwnersCount).ToList();
+                    break;
+                case "popularity_asc":
+                    gameWithCounts = gameWithCounts.OrderBy(g => g.OwnersCount).ToList();
+                    break;
                 default:
-                    game = game.OrderBy(g => g.Title).ToList();
+                    gameWithCounts = gameWithCounts.OrderBy(g => g.Game.Title).ToList();
                     break;
             }
+
+            game = gameWithCounts.Select(g => g.Game).ToList();
+
 
             return View(game);
         }
@@ -191,6 +203,9 @@ namespace PixelForge.Controllers
                 .Include(g => g.Reviews)
                     .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(g => g.Id == id);
+
+            var ownersCount = await _context.UserGames.CountAsync(ug => ug.GameId == game.Id);
+            ViewBag.OwnersCount = ownersCount;
 
             if (game == null)
                 return NotFound();

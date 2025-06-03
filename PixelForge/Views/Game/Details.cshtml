@@ -14,19 +14,28 @@
     <strong>Publisher:</strong> @Model.Publisher.FirstName @Model.Publisher.SecondName
 </div>
 
+<div><strong>Owned by:</strong> @ViewBag.OwnersCount user(s)</div>
+
+
 <h4>Average Rating: @(Model.Reviews.Any() ? Model.Reviews.Average(r => r.Rating).ToString("0.0") : "No ratings") / 5</h4>
 
 @if (Model.Reviews.Any())
 {
-    <ul>
-        @foreach (var review in Model.Reviews)
+    double average = Model.Reviews.Average(r => r.Rating);
+    <div>
+        @for (int i = 1; i <= 5; i++)
         {
-            <li>
-                <strong>@review.User.FirstName @review.User.SecondName</strong> rated @review.Rating/5
-                <p>@review.Comment</p>
-            </li>
+            <span>@(i <= Math.Round(average) ? "★" : "☆")</span>
         }
-    </ul>
+        <span> (@average.ToString("0.0") / 5)</span>
+    </div>
+    @foreach (var review in Model.Reviews)
+    {
+        <li>
+            <strong>@review.User.FirstName @review.User.SecondName</strong> rated @review.Rating/5
+            <p>@review.Comment</p>
+        </li>
+    }
 }
 else
 {
