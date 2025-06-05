@@ -1,0 +1,23 @@
+﻿@model PixelForge.Models.SupportMessage
+@{
+    ViewData["Title"] = "Trimite mesaj de suport";
+    var game = ViewBag.Game as PixelForge.Models.Game;
+}
+
+<h2>Send a support message to the publisher for the game "@game.Title"</h2>
+
+<form asp-action="Send" method="post">
+    <input type="hidden" asp-for="GameId" value="@game.Id" />
+
+    <div class="form-group">
+        <label asp-for="Title"></label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Content"></label>
+        <textarea asp-for="Content" class="form-control" rows="5"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Send</button>
+</form>

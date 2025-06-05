@@ -19,6 +19,7 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
     public DbSet<Game> Games { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<ReviewVote> ReviewVotes { get; set; }
+    public DbSet<SupportMessage> SupportMessages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -73,6 +74,12 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
             .WithMany(r => r.Votes)
             .HasForeignKey(rv => rv.ReviewId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<SupportMessage>()
+            .HasOne(sm => sm.Author)
+            .WithMany()
+            .HasForeignKey(sm => sm.AuthorId)
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
 }

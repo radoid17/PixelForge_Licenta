@@ -1,0 +1,42 @@
+﻿@model List<PixelForge.Models.SupportMessage>
+@{
+    ViewData["Title"] = "Support";
+    var game = ViewBag.Game as PixelForge.Models.Game;
+}
+
+<h2>Support for "@game.Title"</h2>
+
+<hr />
+
+@foreach (var message in Model)
+{
+    <div class="card mb-3 mt-2">
+        <div class="card-header">
+            <strong>@message.Title</strong> – @message.CreatedAt.ToString("g")
+            <br />
+            <small>Sent by: @message.Author.FirstName @message.Author.SecondName</small>
+        </div>
+        <div class="card-body">
+            <p>@message.Content</p>
+        </div>
+    </div>
+
+    @if (message.PublisherReply != null)
+    {
+        <div class="card-footer bg-light">
+            <strong>Reply from the publisher:</strong><br />
+            @message.PublisherReply
+            <br />
+            <small>@message.ReplyDate?.ToString("g")</small>
+        </div>
+    }
+    else
+    {
+        @if (User.IsInRole("Publisher"))
+        {
+            <a asp-action="Reply" asp-route-id="@message.Id" class="btn btn-sm btn-outline-primary mt-2">
+                Reply
+            </a>
+        }
+    }
+}
