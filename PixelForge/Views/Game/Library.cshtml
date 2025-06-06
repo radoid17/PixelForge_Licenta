@@ -45,14 +45,37 @@
                 <td>@ownedGames.Genre</td>
                 <td>@ownedGames.AgeRating</td>
                 <td>
-                    @if (!string.IsNullOrEmpty(ownedGames.GameFilePath))
+                    @if (ownedGames.Versions != null && ownedGames.Versions.Any())
                     {
-                        <a asp-action="Download" asp-route-id="@ownedGames.Id" class="btn btn-primary">Download</a>
+                        <form asp-action="DownloadVersion" method="get">
+                            <input type="hidden" name="gameId" value="@ownedGames.Id" />
+                            <div class="input-group">
+                                <select name="versionId" class="form-control">
+                                    @if (!string.IsNullOrEmpty(ownedGames.GameFilePath))
+                                    {
+                                        <option value="legacy">Legacy - Original Upload</option>
+                                    }
+                                    @foreach (var version in ownedGames.Versions.OrderByDescending(v => v.UploadDate))
+                                    {
+                                        <option value="@version.Id">@version.VersionNumber - @version.UploadDate.ToString("yyyy-MM-dd")</option>
+                                    }
+
+                                </select>
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-success">Download</button>
+                                </div>
+                            </div>
+                        </form>
+                    }
+                    else if (!string.IsNullOrEmpty(ownedGames.GameFilePath))
+                    {
+                        <a asp-action="Download" asp-route-id="@ownedGames.Id" class="btn btn-success">Download</a>
                     }
                     else
                     {
                         <span class="text-muted">No File</span>
                     }
+
                 </td>
                 <td><a asp-controller="Review" asp-action="Create" asp-route-gameId="@ownedGames.Id" class="btn btn-outline-primary">Review</a></td>
 

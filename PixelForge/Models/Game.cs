@@ -27,6 +27,7 @@ namespace PixelForge.Models
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public bool IsDeleted { get; set; } = false;
         public string? GameFilePath { get; set; }
+        public ICollection<GameVersion> Versions { get; set; } = new List<GameVersion>();
 
     }
 }

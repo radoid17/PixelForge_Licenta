@@ -270,6 +270,35 @@ namespace PixelForge.Migrations
                     b.ToTable("Games");
                 });
 
+            modelBuilder.Entity("PixelForge.Models.GameVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("GameId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VersionNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("GameVersions");
+                });
+
             modelBuilder.Entity("PixelForge.Models.Review", b =>
                 {
                     b.Property<int>("Id")
@@ -440,6 +469,17 @@ namespace PixelForge.Migrations
                     b.Navigation("Publisher");
                 });
 
+            modelBuilder.Entity("PixelForge.Models.GameVersion", b =>
+                {
+                    b.HasOne("PixelForge.Models.Game", "Game")
+                        .WithMany("Versions")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
             modelBuilder.Entity("PixelForge.Models.Review", b =>
                 {
                     b.HasOne("PixelForge.Models.Game", "Game")
@@ -526,6 +566,8 @@ namespace PixelForge.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("UserGames");
+
+                    b.Navigation("Versions");
                 });
 
             modelBuilder.Entity("PixelForge.Models.Review", b =>

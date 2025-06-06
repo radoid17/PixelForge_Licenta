@@ -20,6 +20,8 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
     public DbSet<Review> Reviews { get; set; }
     public DbSet<ReviewVote> ReviewVotes { get; set; }
     public DbSet<SupportMessage> SupportMessages { get; set; }
+    public DbSet<GameVersion> GameVersions { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -80,6 +82,13 @@ public class UserDbContext : IdentityDbContext<PixelForgeUser>
             .WithMany()
             .HasForeignKey(sm => sm.AuthorId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<GameVersion>()
+        .HasOne(gv => gv.Game)
+        .WithMany(g => g.Versions)
+        .HasForeignKey(gv => gv.GameId)
+        .OnDelete(DeleteBehavior.Cascade);
+
 
     }
 }

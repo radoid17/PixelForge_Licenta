@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using PixelForge.Models;
 using PixelForge.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
-//using PixelForge.Migrations;
 
 namespace PixelForge.Controllers
 {
@@ -132,6 +131,7 @@ namespace PixelForge.Controllers
             var ownedGames = await _context.UserGames
                 .Where(ug => ug.UserId == userId)
                 .Include(ug => ug.Game)
+                    .ThenInclude(g => g.Versions)
                 .Select(ug => ug.Game)
                 .ToListAsync();
 
@@ -140,13 +140,11 @@ namespace PixelForge.Controllers
                 ownedGames = ownedGames.Where(g => g.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // 🔍 Filtrare după gen
             if (!string.IsNullOrEmpty(genreFilter))
             {
                 ownedGames = ownedGames.Where(g => g.Genre.Equals(genreFilter, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
-            // 🔍 Filtrare după rating vârstă
             if (!string.IsNullOrEmpty(ageFilter))
             {
                 ownedGames = ownedGames.Where(g => g.AgeRating.ToString() == ageFilter).ToList();
@@ -276,16 +274,60 @@ namespace PixelForge.Controllers
             return View(game);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, [Bind("Id, Title, Price, PublisherId, Genre, AgeRating, GameFilePath")] Game game)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Title, Price, PublisherId, Genre, AgeRating, GameFilePath")] Game game, IFormFile newVersionFile, string versionNumber)
         {
-            if (ModelState.IsValid)
+            var existingGame = await _context.Games
+                .Include(g => g.Versions)
+                .FirstOrDefaultAsync(g => g.Id == id);
+
+            if (existingGame == null || existingGame.PublisherId != game.PublisherId)
+                return Unauthorized();
+
+            existingGame.Title = game.Title;
+            existingGame.Price = game.Price;
+            existingGame.Genre = game.Genre;
+            existingGame.AgeRating = game.AgeRating;
+
+            if (newVersionFile != null && newVersionFile.Length > 0 && !string.IsNullOrWhiteSpace(versionNumber))
             {
-                _context.Games.Update(game);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Index");
+                var allowedExtensions = new[] { ".zip", ".rar", ".exe", ".msi" };
+                var extension = Path.GetExtension(newVersionFile.FileName).ToLowerInvariant();
+
+                if (!allowedExtensions.Contains(extension))
+                {
+                    ModelState.AddModelError("", "File type not allowed.");
+                    return View(game);
+                }
+
+                var uploadsPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+                if (!Directory.Exists(uploadsPath))
+                    Directory.CreateDirectory(uploadsPath);
+
+                var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(newVersionFile.FileName)}";
+                var fullPath = Path.Combine(uploadsPath, uniqueFileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    await newVersionFile.CopyToAsync(stream);
+                }
+
+                var version = new GameVersion
+                {
+                    GameId = existingGame.Id,
+                    VersionNumber = versionNumber,
+                    FilePath = $"/uploads/{uniqueFileName}",
+                    UploadDate = DateTime.Now
+                };
+
+                _context.GameVersions.Add(version);
             }
-            return View(game);
+
+            _context.Games.Update(existingGame);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
+
 
         public async Task<IActionResult> Delete(int id)
         {
@@ -359,6 +401,59 @@ namespace PixelForge.Controllers
             ViewBag.Data = topGames.Select(g => g.BuyerCount).ToList();
 
             return View();
+        }
+
+        public async Task<IActionResult> DownloadVersion(string versionId, int gameId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var ownsGame = await _context.UserGames.AnyAsync(ug => ug.UserId == userId && ug.GameId == gameId);
+            if (!ownsGame)
+                return Unauthorized();
+
+            if (versionId == "legacy")
+            {
+                var game = await _context.Games.FirstOrDefaultAsync(g => g.Id == gameId);
+                if (game == null || string.IsNullOrEmpty(game.GameFilePath))
+                    return NotFound();
+
+                var legacyPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", game.GameFilePath.TrimStart('/'));
+                if (!System.IO.File.Exists(legacyPath))
+                    return NotFound("Legacy file not found.");
+
+                var fileName = Path.GetFileName(legacyPath);
+                var memory = new MemoryStream();
+                using (var stream = new FileStream(legacyPath, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+                memory.Position = 0;
+
+                return File(memory, "application/octet-stream", fileName);
+            }
+
+            if (!int.TryParse(versionId, out int id))
+                return BadRequest("Invalid version ID.");
+
+            var version = await _context.GameVersions
+                .Include(v => v.Game)
+                .FirstOrDefaultAsync(v => v.Id == id && v.GameId == gameId);
+
+            if (version == null)
+                return NotFound();
+
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", version.FilePath.TrimStart('/'));
+            if (!System.IO.File.Exists(path))
+                return NotFound("Version file not found.");
+
+            var versionFileName = Path.GetFileName(path);
+            var versionMemory = new MemoryStream();
+            using (var stream = new FileStream(path, FileMode.Open))
+            {
+                await stream.CopyToAsync(versionMemory);
+            }
+            versionMemory.Position = 0;
+
+            return File(versionMemory, "application/octet-stream", versionFileName);
         }
 
 
