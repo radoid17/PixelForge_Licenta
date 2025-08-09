@@ -1,17 +1,17 @@
 ﻿@model PixelForge.Models.SupportMessage
 
-<h2>Răspunde la mesaj: @Model.Title</h2>
+<h2>Reply: @Model.Title</h2>
 
-<p><strong>Mesaj trimis de @Model.Author.FirstName @Model.Author.SecondName:</strong></p>
+<p><strong>Message sent by @Model.Author.FirstName @Model.Author.SecondName:</strong></p>
 <p>@Model.Content</p>
 
 <form asp-action="Reply" method="post">
     <input type="hidden" name="id" value="@Model.Id" />
 
     <div class="form-group">
-        <label for="reply">Răspunsul tău:</label>
+        <label for="reply">Your answer:</label>
         <textarea name="reply" class="form-control" rows="5"></textarea>
     </div>
 
-    <button type="submit" class="btn btn-success">Trimite răspunsul</button>
+    <button type="submit" class="btn btn-success">Send Answer</button>
 </form>
